@@ -12,5 +12,6 @@ CORS(app)
 @app.route("/index", methods=["POST"])
 def index():
     req = request.get_json()
+    print(req)
     response = {"message": "Data received successfully", "data": req}
     return jsonify(response), 200
