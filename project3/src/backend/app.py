@@ -21,12 +21,10 @@ CORS(app)
 
 
 CONST_SIMILARITY_THRESHOLD = 0.4
-CONST_NUM_ITEMS = 100
+CONST_NUM_ITEMS = 3
 CONST_MAX_ADJACENT = 10
 food_graph = AdjList()
 vectorizer = TfidfVectorizer()
-
-
 
 
 @app.route("/index", methods=["POST"])
@@ -106,34 +104,21 @@ def parse_csv():
                         count_nodes += 1
                     if count_nodes > CONST_MAX_ADJACENT:
                         break
+
+
 parse_csv()
 
 
-    # count = 0
-    # for key in food_graph.graph:
-    #     count += 1
-    #     print("Food: ", key, "adj nodes: ", print(food_graph.graph[key][1]))
-    #     if count > 10000:
-    #         break
+# count = 0
+# for key in food_graph.graph:
+#     count += 1
+#     print("Food: ", key, "adj nodes: ", print(food_graph.graph[key][1]))
+#     if count > 10000:
+#         break
 
 
 def search(word):
-    heap = []
-    maxCosine = None
-    for food in food_graph.graph:
-        currCosine = max(
-            cosine_sim(word, food), maxCosine if maxCosine else cosine_sim(word, food)
-        )
-        if currCosine != maxCosine:
-            maxCosine = currCosine
-            heapq.heappush(heap, [maxCosine, food])
-            if len(heap) > 11:
-                heapq.heappop(heap)
-    heapq.heappop(heap)
-    return heap
-
-
-def search_in_graph(word):
+    # [0.234234, peanut butter]
     heap = []
     maxCosine = None
     for food in food_graph.graph:
@@ -170,40 +155,39 @@ def dfs(heap):
         if heap:
             stack.append(heapq.heappop(heap))
         else:
-            heap = search_in_graph(res_list[-1])
+            heap = search(res_list[-1])
             stack.append(heap[-1])
     end_time = time.time()
     return res, end_time - start_time
 
 
-def bfs(heap):
-    start_time = time.time()
-    start = heapq.heappop(heap)
-    queue = collections.deque([start])
-    res = set()
-    res.add(start[1])
-    res_list = [start[1]]
+# def bfs(heap):
+#     start_time = time.time()
+#     start = heapq.heappop(heap)
+#     queue = collections.deque([start])
+#     res = set()
+#     res.add(start[1])
+#     res_list = [start[1]]
 
-    while len(res) < 10:
-        while queue:
-            for i in range(len(queue)):
-                node = queue.popleft()
-                if len(res) > 10:
-                    end_time = time.time()
-                    return res, end_time - start_time
-                for adj_node in food_graph.graph[node[1]][1]:
-                    if adj_node not in res and len(res) < 10:
-                        res.add(node[1])
-                        res_list.append(node[1])
-                        queue.append([1, adj_node])
-        if len(res) > 10:
-            end_time = time.time()
-            return res, end_time - start_time
-        if heap:
-            queue.append(heapq.heappop(heap))
-        else:
-            heap = search_in_graph(res_list[random.randint(0, len(res_list) - 1)])
-            queue.append(heap[-1])
-    end_time = time.time()
-    return res, end_time - start_time
-
+#     while len(res) < 10:
+#         while queue:
+#             for i in range(len(queue)):
+#                 node = queue.popleft()
+#                 if len(res) > 10:
+#                     end_time = time.time()
+#                     return res, end_time - start_time
+#                 for adj_node in food_graph.graph[node[1]][1]:
+#                     if adj_node not in res and len(res) < 10:
+#                         res.add(node[1])
+#                         res_list.append(node[1])
+#                         queue.append([1, adj_node])
+#         if len(res) > 10:
+#             end_time = time.time()
+#             return res, end_time - start_time
+#         if heap:
+#             queue.append(heapq.heappop(heap))
+#         else:
+#             heap = search(res_list[random.randint(0, len(res_list) - 1)])
+#             queue.append(heap[-1])
+#     end_time = time.time()
+#     return res, end_time - start_time
