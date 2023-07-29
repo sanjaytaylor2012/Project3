@@ -25,6 +25,7 @@ class AdjList:
         self.graph[_from][1].append(_to)
         self.graph[_to][1].append(_from)
 
+    # {peanuts butter: [Food(Peanut Butter), [Salted Peanuts, Peanut Spread]]}
     def addVertex(self, food):
         if (food.name) not in self.graph:
             self.graph[(food.name)] = []
