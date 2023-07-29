@@ -13,6 +13,7 @@ export default function Home() {
   };
 
   const sendForm = async () => {
+    console.log("hi");
     await fetch("http://127.0.0.1:5000/index", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -20,7 +21,8 @@ export default function Home() {
     })
       .then((response) => response.json())
       .then((data) => {
-        setResponse(data["message"]);
+        setResponse(data["res"]);
+        console.log(data["res"]);
       });
   };
 
@@ -41,7 +43,7 @@ export default function Home() {
         <Button type="submit" onClick={onSubmit}>
           Enter
         </Button>
-        {response && <Text fontSize={50}>{response}</Text>}
+        {/* {response && <Text fontSize={50}>{response}</Text>} */}
       </Stack>
     </>
   );

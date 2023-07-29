@@ -4,6 +4,7 @@
 # project3/src/backend/
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+
 import csv
 from AdjList import AdjList
 from Food import Food
@@ -11,23 +12,57 @@ import heapq
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import collections
-import copy
-
-# app = Flask(__name__)
-# CORS(app)
+import random
+import time
 
 
-# function to return the cosine similarity of two strings
+app = Flask(__name__)
+CORS(app)
+
+
+CONST_SIMILARITY_THRESHOLD = 0.4
+CONST_NUM_ITEMS = 100
+CONST_MAX_ADJACENT = 10
+food_graph = AdjList()
+vectorizer = TfidfVectorizer()
+
+
+
+
+@app.route("/index", methods=["POST"])
+def index():
+    req = request.get_json()
+    print(req)
+    node = search(req)
+
+    dfs_result, dfs_time = dfs(node)
+    dfs_result = list(dfs_result)
+    dfs_time = round(dfs_time, 3)
+
+    print("dfs: ", dfs_result)
+    print("dfs time: ", dfs_time)
+
+    node = search(req)
+
+    bfs_result, bfs_time = bfs(node)
+    bfs_result = list(bfs_result)
+    bfs_time = round(bfs_time, 3)
+
+    print("bfs: ", bfs_result)
+    print("bfs time: ", bfs_time)
+
+    response = {"res": {"dfs": {dfs_result, dfs_time}, "bfs": {bfs_result, bfs_time}}}
+    return jsonify(response), 200
+
+
+# # function to return the cosine similarity of two strings
+
+
 def cosine_sim(str1, str2):
-    # Create a vectorizer
-    vectorizer = TfidfVectorizer()
-
     # Create vectors based of the strings
     vectors = vectorizer.fit_transform([str1, str2])
-
     # Compute the cosine similarity between the vectors
     cosine_sim = cosine_similarity(vectors[0], vectors[1])[0][0]
-
     return cosine_sim
 
 
@@ -40,7 +75,7 @@ def parse_csv():
 
         for row in csvFile:
             count += 1
-            if count > 100:
+            if count > CONST_NUM_ITEMS:
                 break
             if first_line:
                 first_line = False
@@ -69,8 +104,10 @@ def parse_csv():
                         food_graph.addEdge(key, food_node.name)
                         food_graph.addEdge(food_node.name, key)
                         count_nodes += 1
-                    if count_nodes > 5:
+                    if count_nodes > CONST_MAX_ADJACENT:
                         break
+parse_csv()
+
 
     # count = 0
     # for key in food_graph.graph:
@@ -113,6 +150,7 @@ def search_in_graph(word):
 
 
 def dfs(heap):
+    start_time = time.time()
     stack = [heapq.heappop(heap)]
     res = set()
     res_list = []
@@ -124,7 +162,8 @@ def dfs(heap):
                 res.add(node[1])
                 res_list.append(node[1])
                 if len(res) > 10:
-                    return res
+                    end_time = time.time()
+                    return res, end_time - start_time
                 for adj_node in food_graph.graph[node[1]][1]:
                     if adj_node not in res:
                         stack.append([1, adj_node])
@@ -133,52 +172,38 @@ def dfs(heap):
         else:
             heap = search_in_graph(res_list[-1])
             stack.append(heap[-1])
-    return res
+    end_time = time.time()
+    return res, end_time - start_time
 
 
 def bfs(heap):
+    start_time = time.time()
     start = heapq.heappop(heap)
     queue = collections.deque([start])
     res = set()
     res.add(start[1])
     res_list = [start[1]]
-    count = 0
 
     while len(res) < 10:
         while queue:
             for i in range(len(queue)):
                 node = queue.popleft()
                 if len(res) > 10:
-                    return res
+                    end_time = time.time()
+                    return res, end_time - start_time
                 for adj_node in food_graph.graph[node[1]][1]:
                     if adj_node not in res and len(res) < 10:
                         res.add(node[1])
                         res_list.append(node[1])
                         queue.append([1, adj_node])
+        if len(res) > 10:
+            end_time = time.time()
+            return res, end_time - start_time
         if heap:
             queue.append(heapq.heappop(heap))
         else:
-            heap = search_in_graph(res_list[count])
-            count += 1
+            heap = search_in_graph(res_list[random.randint(0, len(res_list) - 1)])
             queue.append(heap[-1])
-    return res
+    end_time = time.time()
+    return res, end_time - start_time
 
-
-CONST_SIMILARITY_THRESHOLD = 0.2
-food_graph = AdjList()
-parse_csv()
-node = search("Black Kidney Beans")
-print("dfs: ", dfs(node))
-node = search("Black Kidney Beans")
-print("bfs: ", bfs(node))
-
-
-# @app.route("/index", methods=["POST"])
-# def index():
-#     req = request.get_json()
-#     print(req)
-#     node = search(req)
-#     dfs(node)
-
-#     response = {"message": "Data received successfully", "data": req}
-#     return jsonify(response), 200
