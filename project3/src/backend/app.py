@@ -4,127 +4,62 @@
 # project3/src/backend/
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
 import csv
 from AdjList import AdjList
 from Food import Food
 import heapq
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 import collections
-import random
 import time
-
 
 app = Flask(__name__)
 CORS(app)
 
 
-CONST_SIMILARITY_THRESHOLD = 0.4
-CONST_NUM_ITEMS = 3
-CONST_MAX_ADJACENT = 10
 food_graph = AdjList()
-vectorizer = TfidfVectorizer()
 
 
-@app.route("/index", methods=["POST"])
-def index():
-    req = request.get_json()
-    print(req)
-    node = search(req)
-
-    dfs_result, dfs_time = dfs(node)
-    dfs_result = list(dfs_result)
-    dfs_time = round(dfs_time, 3)
-
-    print("dfs: ", dfs_result)
-    print("dfs time: ", dfs_time)
-
-    node = search(req)
-
-    bfs_result, bfs_time = bfs(node)
-    bfs_result = list(bfs_result)
-    bfs_time = round(bfs_time, 3)
-
-    print("bfs: ", bfs_result)
-    print("bfs time: ", bfs_time)
-
-    response = {"res": {"dfs": {dfs_result, dfs_time}, "bfs": {bfs_result, bfs_time}}}
-    return jsonify(response), 200
-
-
-# # function to return the cosine similarity of two strings
-
-
-def cosine_sim(str1, str2):
-    # Create vectors based of the strings
-    vectors = vectorizer.fit_transform([str1, str2])
-    # Compute the cosine similarity between the vectors
-    cosine_sim = cosine_similarity(vectors[0], vectors[1])[0][0]
-    return cosine_sim
-
+def jsim(str1, str2):
+    set1 = set(str1)
+    set2 = set(str2)
+    intersection = set1.intersection(set2)
+    union = set1.union(set2)
+    similarity = len(intersection) / len(union)
+    return similarity
 
 def parse_csv():
-    with open("formatted_data.csv", mode="r", encoding="utf8") as file:
+    with open("data.csv", mode="r", encoding="utf8") as file:
         csvFile = csv.reader(file)
 
         first_line = True
-        count = 0
 
         for row in csvFile:
-            count += 1
-            if count > CONST_NUM_ITEMS:
-                break
             if first_line:
                 first_line = False
-            else:
-                food_node = Food(
-                    row[0],
-                    row[1],
-                    # row[2],
-                    # row[3],
-                    # row[4],
-                    # row[5],
-                    # row[6],
-                    # row[7],
-                    # row[8],
-                )
-                print(food_node.name)
-
-                food_graph.addVertex(food_node)
-                count_nodes = 0
-                for key in food_graph.graph:
-                    if (
-                        key != food_node.name
-                        and cosine_sim(key, food_node.name) > CONST_SIMILARITY_THRESHOLD
-                    ):
-                        # print("adding edge: from: ", food_node.name, " to: ", key)
-                        food_graph.addEdge(key, food_node.name)
-                        food_graph.addEdge(food_node.name, key)
-                        count_nodes += 1
-                    if count_nodes > CONST_MAX_ADJACENT:
-                        break
-
-
-parse_csv()
-
-
-# count = 0
-# for key in food_graph.graph:
-#     count += 1
-#     print("Food: ", key, "adj nodes: ", print(food_graph.graph[key][1]))
-#     if count > 10000:
-#         break
-
+                continue
+            food_node = Food(
+                row[1],
+                row[2],
+                row[3],
+                row[4],
+                row[5],
+                row[6],
+                row[7],
+                row[8],
+                row[9],
+                row[10],
+            )
+            adj_nodes = []
+            for i in range(11, len(row)):
+                adj_nodes.append(row[i])
+            nameplusbrand = row[0]
+            food_graph.addVertex(nameplusbrand, food_node, adj_nodes)
 
 def search(word):
     # [0.234234, peanut butter]
     heap = []
     maxCosine = None
     for food in food_graph.graph:
-        currCosine = max(
-            cosine_sim(word, food), maxCosine if maxCosine else cosine_sim(word, food)
-        )
+        currCosine = max(jsim(word, food), maxCosine if maxCosine else jsim(word, food))
         if currCosine != maxCosine and food != word:
             maxCosine = currCosine
             heapq.heappush(heap, [maxCosine, food])
@@ -133,9 +68,14 @@ def search(word):
     heapq.heappop(heap)
     return heap
 
+def reverseHeap(heap):
+    for pair in heap:
+        pair[0] = pair[0] * -1
+    heapq.heapify(heap)
+    return heap
+
 
 def dfs(heap):
-    start_time = time.time()
     stack = [heapq.heappop(heap)]
     res = set()
     res_list = []
@@ -147,8 +87,7 @@ def dfs(heap):
                 res.add(node[1])
                 res_list.append(node[1])
                 if len(res) > 10:
-                    end_time = time.time()
-                    return res, end_time - start_time
+                    return res
                 for adj_node in food_graph.graph[node[1]][1]:
                     if adj_node not in res:
                         stack.append([1, adj_node])
@@ -157,37 +96,78 @@ def dfs(heap):
         else:
             heap = search(res_list[-1])
             stack.append(heap[-1])
+    return res
+
+
+def bfs(heap):
+    heap = reverseHeap(heap)
+    queue = collections.deque([heapq.heappop(heap)])
+    res = set()
+    res_list = []
+
+    while len(res) < 10:
+        while queue:
+            for i in range(len(queue)):
+                node = queue.popleft()
+                res.add(node[1])
+                res_list.append(node[1])
+                if len(res) > 10:
+                    return res
+                for adj_node in food_graph.graph[node[1]][1]:
+                    if adj_node not in res:
+                        queue.append([1, adj_node])
+        if heap:
+            queue.append(heapq.heappop(heap))
+        else:
+            heap = search(res_list[-1])
+            heap = reverseHeap(heap)
+            queue.append(heapq.heappop(heap))
+    return res
+
+print("parsing csv")
+parse_csv()
+print("donw parsing csv")
+
+@app.route("/index", methods=["POST"])
+def index():
+    req = request.get_json()
+    print(req)
+    start_time = time.time()
+    node = search(req)
+    dfs_result = dfs(node)
     end_time = time.time()
-    return res, end_time - start_time
+    dfs_time = end_time - start_time
+    # dfs_time = round(dfs_time, 3)
 
+    dfs_result = list(dfs_result)
+    dfs_result = dfs_result[0:10]
 
-# def bfs(heap):
-#     start_time = time.time()
-#     start = heapq.heappop(heap)
-#     queue = collections.deque([start])
-#     res = set()
-#     res.add(start[1])
-#     res_list = [start[1]]
+    dfs_nodes = []
 
-#     while len(res) < 10:
-#         while queue:
-#             for i in range(len(queue)):
-#                 node = queue.popleft()
-#                 if len(res) > 10:
-#                     end_time = time.time()
-#                     return res, end_time - start_time
-#                 for adj_node in food_graph.graph[node[1]][1]:
-#                     if adj_node not in res and len(res) < 10:
-#                         res.add(node[1])
-#                         res_list.append(node[1])
-#                         queue.append([1, adj_node])
-#         if len(res) > 10:
-#             end_time = time.time()
-#             return res, end_time - start_time
-#         if heap:
-#             queue.append(heapq.heappop(heap))
-#         else:
-#             heap = search(res_list[random.randint(0, len(res_list) - 1)])
-#             queue.append(heap[-1])
-#     end_time = time.time()
-#     return res, end_time - start_time
+    for name in dfs_result:
+        dfs_nodes.append(food_graph.graph[name][0].to_dict())
+    
+    print("dfs: ", dfs_result)
+    print("dfs time: ", dfs_time)
+
+    start_time = time.time()
+    node = search(req)
+    bfs_result = bfs(node)    
+    end_time = time.time()
+    bfs_time = end_time - start_time
+    # bfs_time = round(bfs_time, 3)
+
+    bfs_result = list(bfs_result)
+    bfs_result = bfs_result[0:10]
+    bfs_nodes = []
+
+    for name in bfs_result:
+        bfs_nodes.append(food_graph.graph[name][0].to_dict())
+    
+    print("bfs: ", bfs_result)    
+    print("bfs time: ", bfs_time)
+
+    response = {"res": {"dfs": {"dfs nodes": dfs_nodes, "dfs time" : dfs_time}, 
+                        "bfs": {"bfs nodes" : bfs_nodes, "bfs time" : bfs_time}}}
+    return jsonify(response), 200
+
