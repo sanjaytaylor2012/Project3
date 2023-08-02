@@ -28,12 +28,12 @@ const FoodItem: React.FC<FoodItemProps> = ({ food }) => {
         <Stack>
           <Text>Brand: {food["brand"]}</Text>
           <Text>Energy: {food["energy"]} kilajoules</Text>
-          <Text>fat: {food["fat"]} g</Text>
-          <Text>fiber: {food["fiber"]} g</Text>
-          <Text>protein: {food["protein"]} g</Text>
-          <Text>serving size: {food["serving_size"]}</Text>
-          <Text>sodium: {food["sodium"]} g</Text>
-          <Text>sugar: {food["sugar"]} g</Text>
+          <Text>Fat: {food["fat"]} g</Text>
+          <Text>Fiber: {food["fiber"]} g</Text>
+          <Text>Protein: {food["protein"]} g</Text>
+          <Text>Serving size: {food["serving_size"]}</Text>
+          <Text>Sodium: {food["sodium"]} g</Text>
+          <Text>Sugar: {food["sugar"]} g</Text>
           <Button>
             <Link target="_blank" href={food["url"]}>
               Click Here for More Info
