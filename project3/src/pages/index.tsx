@@ -23,14 +23,21 @@ export default function Home() {
   const [sortParameter, setSortParameter] = useState("");
   const [loading, setLoading] = useState(false);
   const [sortDirection, setSortDirection] = useState("");
+  // const [accordionIndex, setAccordionIndex] = useState<number[]>([
+  //   1, 1, 1, 1, 1, 1, 0, 1, 1, 1,
+  // ]);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormInput(event.target.value);
   };
 
+  // const resetAccordian = (event: any) => {
+  //   setAccordionIndex([]);
+  // };
+
   const sendForm = async () => {
     setLoading(true);
-    await fetch("http://127.0.0.1:5000/index", {
+    await fetch("https://sanjaytaylor.pythonanywhere.com/index", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formInput),
@@ -221,16 +228,22 @@ export default function Home() {
 
   const onSubmit = (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    setResponse(undefined);
+    // setAccordionIndex([]);
     sendForm();
   };
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSortParameter(event.target.value);
     sortNodes(event.target.value, sortDirection);
+    if (event.target.value == "") {
+      setSortDirection("");
+    }
   };
 
   const handleSortChange = (nextValue: string) => {
     setSortDirection(nextValue);
+
     sortNodes(sortParameter, nextValue);
   };
 
@@ -248,7 +261,7 @@ export default function Home() {
             Enter
           </Button>
           {response && (
-            <>
+            <Flex align="center" direction={{ base: "column", sm: "row" }}>
               <Select
                 value={sortParameter}
                 onChange={handleSelectChange}
@@ -260,13 +273,18 @@ export default function Home() {
                 <option value="sodium">Sodium</option>
                 {/* <option value="sugar">Sugar</option> */}
               </Select>
-              <RadioGroup onChange={handleSortChange} value={sortDirection}>
+              <RadioGroup
+                ml={{ base: 0, sm: 5 }}
+                mt={{ base: 2, sm: 0 }}
+                onChange={handleSortChange}
+                value={sortDirection}
+              >
                 <Stack direction="row">
                   <Radio value="descending">Ascending</Radio>
                   <Radio value="ascending">Descending</Radio>
                 </Stack>
               </RadioGroup>
-            </>
+            </Flex>
           )}
         </Flex>
 
@@ -277,28 +295,28 @@ export default function Home() {
               width={"100%"}
               justifyContent={"space-around"}
             >
-              <Stack align="center" justifyContent="center" mb={5}>
-                <Text fontWeight={700} fontSize={20}>
+              <Stack align="center" justifyContent="top" mb={5}>
+                <Text fontWeight={700} fontSize={{ base: 17, sm: 20 }}>
                   DFS (Depth First Search) for different foods
                 </Text>
-                <Text fontWeight={700} fontSize={20}>
+                <Text fontWeight={700} fontSize={{ base: 17, sm: 20 }}>
                   DFS Time: {response["dfs"]["dfs time"]} seconds
                 </Text>
-                <Accordion width={{ base: "90%", md: "45vw" }}>
+                <Accordion width={{ base: "90%", md: "45vw" }} allowMultiple>
                   {dfsNodes &&
                     dfsNodes.map((food: FoodObj) => {
                       return <FoodItem key={food["url"]} food={food} />;
                     })}
                 </Accordion>
               </Stack>
-              <Stack align="center" justifyContent="center" mb={5}>
-                <Text fontWeight={700} fontSize={20}>
+              <Stack align="center" justifyContent="top" mb={5}>
+                <Text fontWeight={700} fontSize={{ base: 17, sm: 20 }}>
                   BFS (Breadth First Search) for similar foods
                 </Text>
-                <Text fontWeight={700} fontSize={20}>
+                <Text fontWeight={700} fontSize={{ base: 17, sm: 20 }}>
                   BFS Time: {response["bfs"]["bfs time"]} seconds
                 </Text>
-                <Accordion width={{ base: "90%", md: "45vw" }}>
+                <Accordion width={{ base: "90%", md: "45vw" }} allowMultiple>
                   {bfsNodes &&
                     bfsNodes.map((food: FoodObj) => {
                       return <FoodItem key={food["url"]} food={food} />;

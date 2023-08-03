@@ -12,10 +12,10 @@ class Food:
         self.protein = protein
         self.fiber = fiber
         self.sodium = sodium
-        self.dailyfatpercent = 0
-        self.dailyproteinpercent = 0
-        self.dailyfiberpercent = 0
-        self.dailysodiumpercent = 0
+        self.dailyfatpercent = "N/A"
+        self.dailyproteinpercent = "N/A"
+        self.dailyfiberpercent = "N/A"
+        self.dailysodiumpercent = "N/A"
 
     def to_dict(self):
         foodDict = {"name" : self.name, "brand": self.brand, "url" : self.url, 

@@ -11,9 +11,6 @@ import heapq
 import collections
 import time
 
-app = Flask(__name__)
-CORS(app)
-
 
 food_graph = AdjList()
 
@@ -107,7 +104,7 @@ def bfs(heap):
     res_list = []
 
     while len(res) < 10:
-        while queue:
+        while queue and len(res) < 10:
             for i in range(len(queue)):
                 node = queue.popleft()
                 res.add(node[1])
@@ -128,6 +125,10 @@ def bfs(heap):
 print("parsing csv")
 parse_csv()
 print("done parsing csv")
+app = Flask(__name__)
+CORS(app)
+
+
 
 CONST_Per100gtoPer28g = .28
 CONST_DAILYPROTEIN = 50
@@ -137,11 +138,16 @@ CONST_DAILYSODIUM = 2.3
 
 
 def getDailyValues(node):
-    node.energy = round(float(node.energy)*0.239006, 2) #Converts from KJ to Kcal
-    node.dailyfatpercent = round(float(node.fat)*CONST_Per100gtoPer28g/CONST_DAILYFAT*100, 2)
-    node.dailyproteinpercent = round(float(node.protein)*CONST_Per100gtoPer28g/CONST_DAILYPROTEIN*100, 2)
-    node.dailyfiberpercent = round(float(node.fiber)*CONST_Per100gtoPer28g/CONST_DAILYFIBER*100, 2)
-    node.dailysodiumpercent = round(float(node.sodium)*CONST_Per100gtoPer28g/CONST_DAILYSODIUM*100, 2)
+    if node.energy != "N/A":
+        node.energy = round(float(node.energy)*0.239006, 2) #Converts from KJ to Kcal
+    if node.fat != "N/A":
+        node.dailyfatpercent = round(float(node.fat)*CONST_Per100gtoPer28g/CONST_DAILYFAT*100, 2)
+    if node.protein != "N/A":
+        node.dailyproteinpercent = round(float(node.protein)*CONST_Per100gtoPer28g/CONST_DAILYPROTEIN*100, 2)
+    if node.fiber != "N/A":
+        node.dailyfiberpercent = round(float(node.fiber)*CONST_Per100gtoPer28g/CONST_DAILYFIBER*100, 2)
+    if node.sodium != "N/A":
+        node.dailysodiumpercent = round(float(node.sodium)*CONST_Per100gtoPer28g/CONST_DAILYSODIUM*100, 2)
     return node
 
 @app.route("/index", methods=["POST"])
@@ -153,7 +159,7 @@ def index():
     dfs_result = dfs(node)
     end_time = time.time()
     dfs_time = end_time - start_time
-    dfs_time = round(dfs_time, 3)
+    dfs_time = round(dfs_time, 5)
 
     dfs_result = list(dfs_result)[0:10]
     dfs_nodes = []
@@ -172,7 +178,7 @@ def index():
     bfs_result = bfs(node)    
     end_time = time.time()
     bfs_time = end_time - start_time
-    bfs_time = round(bfs_time, 3)
+    bfs_time = round(bfs_time, 5)
 
     bfs_result = list(bfs_result)[0:10]
     bfs_nodes = []
@@ -190,3 +196,5 @@ def index():
                         "bfs": {"bfs nodes" : bfs_nodes, "bfs time" : bfs_time}}}
     return jsonify(response), 200
 
+if __name__ == '__main__':
+    app.run()
