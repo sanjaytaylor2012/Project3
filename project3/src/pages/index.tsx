@@ -296,10 +296,10 @@ export default function Home() {
               justifyContent={"space-around"}
             >
               <Stack align="center" justifyContent="top" mb={5}>
-                <Text fontWeight={700} fontSize={{ base: 16, sm: 20 }}>
+                <Text fontWeight={700} fontSize={{ base: 15, sm: 20 }}>
                   DFS (Depth First Search) for different foods
                 </Text>
-                <Text fontWeight={700} fontSize={{ base: 16, sm: 20 }}>
+                <Text fontWeight={700} fontSize={{ base: 15, sm: 20 }}>
                   DFS Time: {response["dfs"]["dfs time"]} seconds
                 </Text>
                 <Accordion width={{ base: "90%", md: "45vw" }} allowMultiple>
