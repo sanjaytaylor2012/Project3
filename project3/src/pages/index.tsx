@@ -310,10 +310,10 @@ export default function Home() {
                 </Accordion>
               </Stack>
               <Stack align="center" justifyContent="top" mb={5}>
-                <Text fontWeight={700} fontSize={{ base: 17, sm: 20 }}>
+                <Text fontWeight={700} fontSize={{ base: 16, sm: 20 }}>
                   BFS (Breadth First Search) for similar foods
                 </Text>
-                <Text fontWeight={700} fontSize={{ base: 17, sm: 20 }}>
+                <Text fontWeight={700} fontSize={{ base: 16, sm: 20 }}>
                   BFS Time: {response["bfs"]["bfs time"]} seconds
                 </Text>
                 <Accordion width={{ base: "90%", md: "45vw" }} allowMultiple>
