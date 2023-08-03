@@ -9,4 +9,8 @@ interface FoodObj {
   sodium: string;
   sugar: string;
   url: string;
+  dailyfatpercent: string;
+  dailyproteinpercent: string;
+  dailyfiberpercent: string;
+  dailysodiumpercent: string;
 }

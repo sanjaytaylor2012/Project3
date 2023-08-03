@@ -58,11 +58,12 @@ def search(word):
     # [0.234234, peanut butter]
     heap = []
     maxCosine = None
-    for food in food_graph.graph:
-        currCosine = max(jsim(word, food), maxCosine if maxCosine else jsim(word, food))
-        if currCosine != maxCosine and food != word:
+    for key, val in food_graph.graph.items():
+        food_name = val[0].name
+        currCosine = max(jsim(word, food_name), maxCosine if maxCosine else jsim(word, food_name))
+        if currCosine != maxCosine and food_name != word:
             maxCosine = currCosine
-            heapq.heappush(heap, [maxCosine, food])
+            heapq.heappush(heap, [maxCosine, key])
             if len(heap) > 10:
                 heapq.heappop(heap)
     heapq.heappop(heap)
@@ -126,28 +127,44 @@ def bfs(heap):
 
 print("parsing csv")
 parse_csv()
-print("donw parsing csv")
+print("done parsing csv")
+
+CONST_Per100gtoPer28g = .28
+CONST_DAILYPROTEIN = 50
+CONST_DAILYFAT = 78
+CONST_DAILYFIBER = 28
+CONST_DAILYSODIUM = 2.3
+
+
+def getDailyValues(node):
+    node.energy = round(float(node.energy)*0.239006, 2) #Converts from KJ to Kcal
+    node.dailyfatpercent = round(float(node.fat)*CONST_Per100gtoPer28g/CONST_DAILYFAT*100, 2)
+    node.dailyproteinpercent = round(float(node.protein)*CONST_Per100gtoPer28g/CONST_DAILYPROTEIN*100, 2)
+    node.dailyfiberpercent = round(float(node.fiber)*CONST_Per100gtoPer28g/CONST_DAILYFIBER*100, 2)
+    node.dailysodiumpercent = round(float(node.sodium)*CONST_Per100gtoPer28g/CONST_DAILYSODIUM*100, 2)
+    return node
 
 @app.route("/index", methods=["POST"])
 def index():
     req = request.get_json()
-    print(req)
+
     start_time = time.time()
     node = search(req)
     dfs_result = dfs(node)
     end_time = time.time()
     dfs_time = end_time - start_time
-    # dfs_time = round(dfs_time, 3)
+    dfs_time = round(dfs_time, 3)
 
-    dfs_result = list(dfs_result)
-    dfs_result = dfs_result[0:10]
-
+    dfs_result = list(dfs_result)[0:10]
     dfs_nodes = []
-
     for name in dfs_result:
-        dfs_nodes.append(food_graph.graph[name][0].to_dict())
-    
-    print("dfs: ", dfs_result)
+        node = food_graph.graph[name][0]
+        node = getDailyValues(node)
+        node = node.to_dict()
+        dfs_nodes.append(node)
+
+
+    print("dfs: ", dfs_nodes)
     print("dfs time: ", dfs_time)
 
     start_time = time.time()
@@ -155,16 +172,18 @@ def index():
     bfs_result = bfs(node)    
     end_time = time.time()
     bfs_time = end_time - start_time
-    # bfs_time = round(bfs_time, 3)
+    bfs_time = round(bfs_time, 3)
 
-    bfs_result = list(bfs_result)
-    bfs_result = bfs_result[0:10]
+    bfs_result = list(bfs_result)[0:10]
     bfs_nodes = []
-
     for name in bfs_result:
-        bfs_nodes.append(food_graph.graph[name][0].to_dict())
-    
-    print("bfs: ", bfs_result)    
+        node = food_graph.graph[name][0]
+        node = getDailyValues(node)
+        node = node.to_dict()
+        bfs_nodes.append(node)
+
+   
+    print("bfs: ", bfs_nodes)    
     print("bfs time: ", bfs_time)
 
     response = {"res": {"dfs": {"dfs nodes": dfs_nodes, "dfs time" : dfs_time}, 
