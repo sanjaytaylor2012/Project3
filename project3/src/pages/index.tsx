@@ -296,7 +296,11 @@ export default function Home() {
               justifyContent={"space-around"}
             >
               <Stack align="center" justifyContent="top" mb={5}>
-                <Text fontWeight={700} fontSize={{ base: 15, sm: 20 }}>
+                <Text
+                  align={"center"}
+                  fontWeight={700}
+                  fontSize={{ base: 15, sm: 20 }}
+                >
                   DFS (Depth First Search) for different foods
                 </Text>
                 <Text fontWeight={700} fontSize={{ base: 15, sm: 20 }}>
@@ -310,7 +314,11 @@ export default function Home() {
                 </Accordion>
               </Stack>
               <Stack align="center" justifyContent="top" mb={5}>
-                <Text fontWeight={700} fontSize={{ base: 16, sm: 20 }}>
+                <Text
+                  align={"center"}
+                  fontWeight={700}
+                  fontSize={{ base: 16, sm: 20 }}
+                >
                   BFS (Breadth First Search) for similar foods
                 </Text>
                 <Text fontWeight={700} fontSize={{ base: 16, sm: 20 }}>
