@@ -250,7 +250,7 @@ export default function Home() {
   return (
     <>
       <Stack align="center" justifyContent="center" mt={8} mb={8}>
-        <Text fontSize={50}>Brand Balance</Text>
+        <Text fontSize={{ base: 40, sm: 50 }}>Brand Balance</Text>
         <Input
           placeholder="Enter any food here"
           onChange={onChange}
@@ -296,10 +296,10 @@ export default function Home() {
               justifyContent={"space-around"}
             >
               <Stack align="center" justifyContent="top" mb={5}>
-                <Text fontWeight={700} fontSize={{ base: 17, sm: 20 }}>
+                <Text fontWeight={700} fontSize={{ base: 16, sm: 20 }}>
                   DFS (Depth First Search) for different foods
                 </Text>
-                <Text fontWeight={700} fontSize={{ base: 17, sm: 20 }}>
+                <Text fontWeight={700} fontSize={{ base: 16, sm: 20 }}>
                   DFS Time: {response["dfs"]["dfs time"]} seconds
                 </Text>
                 <Accordion width={{ base: "90%", md: "45vw" }} allowMultiple>
