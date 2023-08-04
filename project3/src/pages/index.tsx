@@ -310,7 +310,7 @@ export default function Home() {
                   fontWeight={700}
                   fontSize={{ base: 15, sm: 20 }}
                 >
-                  DFS (Depth First Search) for different foods
+                  DFS (Depth First Search)
                 </Text>
                 <Text fontWeight={700} fontSize={{ base: 15, sm: 20 }}>
                   DFS Time: {response["dfs"]["dfs time"]} seconds
@@ -328,7 +328,7 @@ export default function Home() {
                   fontWeight={700}
                   fontSize={{ base: 16, sm: 20 }}
                 >
-                  BFS (Breadth First Search) for similar foods
+                  BFS (Breadth First Search)
                 </Text>
                 <Text fontWeight={700} fontSize={{ base: 16, sm: 20 }}>
                   BFS Time: {response["bfs"]["bfs time"]} seconds
