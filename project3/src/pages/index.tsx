@@ -35,9 +35,10 @@ export default function Home() {
   //   setAccordionIndex([]);
   // };
 
+  //"http://127.0.0.1:5000/index"
   const sendForm = async () => {
     setLoading(true);
-    await fetch("http://127.0.0.1:5000/index", {
+    await fetch("https://sanjaytaylor.pythonanywhere.com/index", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formInput),
