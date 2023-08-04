@@ -241,10 +241,9 @@ export default function Home() {
     }
   };
 
-  const handleSortChange = (nextValue: string) => {
-    setSortDirection(nextValue);
-
-    sortNodes(sortParameter, nextValue);
+  const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortDirection(event.target.value);
+    sortNodes(sortParameter, event.target.value);
   };
 
   return (
@@ -261,7 +260,7 @@ export default function Home() {
             Enter
           </Button>
           {response && (
-            <Flex align="center" direction={{ base: "column", sm: "row" }}>
+            <Flex align="center">
               <Select
                 value={sortParameter}
                 onChange={handleSelectChange}
@@ -271,19 +270,29 @@ export default function Home() {
                 <option value="fiber">Fiber</option>
                 <option value="protein">Protein</option>
                 <option value="sodium">Sodium</option>
-                {/* <option value="sugar">Sugar</option> */}
+                <option value="sugar">Sugar</option>
               </Select>
-              <RadioGroup
+              <Select
+                placeholder="Sort Direction"
+                onChange={handleSortChange}
+                value={sortDirection}
+                ml={4}
+                // width={{ base: "100px", sm: "300px" }}
+              >
+                <option value="descending">Low to High</option>
+                <option value="ascending">High to Low</option>
+              </Select>
+              {/* <RadioGroup
                 ml={{ base: 0, sm: 5 }}
                 mt={{ base: 2, sm: 0 }}
                 onChange={handleSortChange}
                 value={sortDirection}
               >
                 <Stack direction="row">
-                  <Radio value="descending">Ascending</Radio>
-                  <Radio value="ascending">Descending</Radio>
+                  <Radio value="descending">Low to High</Radio>
+                  <Radio value="ascending">High to Low</Radio>
                 </Stack>
-              </RadioGroup>
+              </RadioGroup> */}
             </Flex>
           )}
         </Flex>

@@ -28,22 +28,26 @@ const index: React.FC<indexProps> = () => {
         Technical Details
       </Text>
       <Text>
-        This website is built upon an Open Food Facts database found on kaggle(
+        This website is built upon an Open Food Facts database found on{" "}
         <Link
+          color={"blue.300"}
           href={
             "https://www.kaggle.com/datasets/openfoodfacts/world-food-facts?resource=download"
           }
         >
-          Click here for more details
+          kaggle
         </Link>
-        ). The csv data is parsed, stripping unnecessary information, and built
+        . The csv data is parsed, stripping unnecessary information, and built
         into an adjacency list graph. In the graph, foods are adjacent to each
         other if their names’ are similar enough. This similarity is found by
-        calculating the Jaccard index(
-        <Link href="https://en.wikipedia.org/wiki/Jaccard_index">
-          Click here for more details
-        </Link>
-        ) for any two pairs of foods. When the user searches a food, their input
+        calculating the{" "}
+        <Link
+          color={"blue.300"}
+          href={"https://en.wikipedia.org/wiki/Jaccard_index"}
+        >
+          Jaccard index
+        </Link>{" "}
+        for any two pairs of foods. When the user searches a food, their input
         is compared with every node in the graph. The top 10 most similar foods
         to the input are saved. Then BFS/DFS is called on the graph, with the
         starting node being the food that was most similar to the input. Each
