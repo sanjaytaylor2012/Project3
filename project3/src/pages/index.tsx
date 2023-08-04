@@ -231,8 +231,8 @@ export default function Home() {
     setResponse(undefined);
     // setAccordionIndex([]);
     sendForm();
-    setSortParameter("");
-    setSortDirection("");
+    // setSortParameter("");
+    // setSortDirection("");
   };
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
