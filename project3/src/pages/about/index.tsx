@@ -1,4 +1,4 @@
-import { Flex, Stack, Text } from "@chakra-ui/react";
+import { Flex, Link, Stack, Text } from "@chakra-ui/react";
 import React from "react";
 
 type indexProps = {};
@@ -23,6 +23,34 @@ const index: React.FC<indexProps> = () => {
         the healthiest brand for a certain food they want. By using DFS, the
         user can explore different types of foods that they may never have heard
         of.
+      </Text>
+      <Text fontWeight={600} fontSize={50}>
+        Technical Details
+      </Text>
+      <Text>
+        This website is built upon an Open Food Facts database found on kaggle(
+        <Link
+          href={
+            "https://www.kaggle.com/datasets/openfoodfacts/world-food-facts?resource=download"
+          }
+        >
+          Click here for more details
+        </Link>
+        ). The csv data is parsed, stripping unnecessary information, and built
+        into an adjacency list graph. In the graph, foods are adjacent to each
+        other if their names’ are similar enough. This similarity is found by
+        calculating the Jaccard index(
+        <Link href="https://en.wikipedia.org/wiki/Jaccard_index">
+          Click here for more details
+        </Link>
+        ) for any two pairs of foods. When the user searches a food, their input
+        is compared with every node in the graph. The top 10 most similar foods
+        to the input are saved. Then BFS/DFS is called on the graph, with the
+        starting node being the food that was most similar to the input. Each
+        node traversed in the search is displayed on the website. If the
+        traversal reaches a dead-end in the graph before displaying 10 values,
+        BFS/DFS is then called again with the next most similar food that has
+        not already been traversed being the starting node.
       </Text>
     </Stack>
   );
