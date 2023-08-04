@@ -37,7 +37,7 @@ export default function Home() {
 
   const sendForm = async () => {
     setLoading(true);
-    await fetch("https://sanjaytaylor.pythonanywhere.com/index", {
+    await fetch("http://127.0.0.1:5000/index", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formInput),
@@ -231,6 +231,8 @@ export default function Home() {
     setResponse(undefined);
     // setAccordionIndex([]);
     sendForm();
+    setSortParameter("");
+    setSortDirection("");
   };
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
