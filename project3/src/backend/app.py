@@ -14,7 +14,7 @@ import time
 
 food_graph = AdjList()
 
-
+# Calculates the Jaccard similarity between 2 strings, returns a number 0-1, 1 being very similar, 0 being very unsimilar
 def jsim(str1, str2):
     set1 = set(str1)
     set2 = set(str2)
@@ -23,7 +23,7 @@ def jsim(str1, str2):
     similarity = len(intersection) / len(union)
     return similarity
 
-
+# Reads the serialized csv, constructs graph datastructure
 def parse_csv():
     with open("data.csv", mode="r", encoding="utf8") as file:
         csvFile = csv.reader(file)
@@ -34,6 +34,7 @@ def parse_csv():
             if first_line:
                 first_line = False
                 continue
+            # Creates food object with all necessary values such as nutrition values
             food_node = Food(
                 row[1],
                 row[2],
@@ -47,26 +48,26 @@ def parse_csv():
                 row[10],
             )
             adj_nodes = []
+            # Creates adjacent foods list for the current food
             for i in range(11, len(row)):
                 adj_nodes.append(row[i])
             nameplusbrand = row[0]
             food_graph.addVertex(nameplusbrand, food_node, adj_nodes)
 
-
+# Returns heap of the input string's 10 most similar foods in the graph
 def search(word):
-    # [0.234234, peanut butter]
     heap = []
-    maxCosine = None
+    maxSim = None
     for key, val in food_graph.graph.items():
         food_name = val[0].name
-        currCosine = max(
-            jsim(word, food_name), maxCosine if maxCosine else jsim(word, food_name)
-        )
-        if currCosine != maxCosine and food_name != word:
-            maxCosine = currCosine
-            heapq.heappush(heap, [maxCosine, key])
-            if len(heap) > 10:
-                heapq.heappop(heap)
+        # currSim = max(
+        #     jsim(word, food_name), maxSim if maxSim else jsim(word, food_name) #Calculates similarity between food in graph and entered food
+        # )
+        # if currSim != maxSim and food_name != word:
+        #     maxSim = currSim
+        heapq.heappush(heap, [jsim(word, food_name), key])
+        if len(heap) > 10:
+            heapq.heappop(heap)
     heapq.heappop(heap)
     return heap
 
