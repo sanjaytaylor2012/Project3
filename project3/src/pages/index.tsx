@@ -9,7 +9,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Accordion } from "@chakra-ui/react";
 import FoodItem from "@/Components/FoodItem";
 
@@ -31,10 +31,7 @@ export default function Home() {
     setFormInput(event.target.value);
   };
 
-  // const resetAccordian = (event: any) => {
-  //   setAccordionIndex([]);
-  // };
-
+  //send api call to backend server
   //"http://127.0.0.1:5000/index"
   const sendForm = async () => {
     setLoading(true);
@@ -45,6 +42,7 @@ export default function Home() {
     })
       .then((response) => response.json())
       .then((data) => {
+        //setting states once the data has been recieved
         setResponse(data["res"]);
         setBfsNodes(data["res"]["bfs"]["bfs nodes"]);
         setdfsNodes(data["res"]["dfs"]["dfs nodes"]);
@@ -53,74 +51,7 @@ export default function Home() {
       });
   };
 
-  // const sortNodes = (sortParameter: string) => {
-  //   if (sortParameter == "") {
-  //     return;
-  //   } else if (sortParameter == "fat") {
-  //     bfsNodes?.sort((a, b) => {
-  //       const a_num = parseFloat(a.fat);
-  //       const b_num = parseFloat(b.fat);
-  //       return b_num - a_num;
-  //     });
-  //     dfsNodes?.sort((a, b) => {
-  //       const a_num = parseFloat(a.fat);
-  //       const b_num = parseFloat(b.fat);
-  //       return b_num - a_num;
-  //     });
-  //   } else if (sortParameter == "fiber") {
-  //     bfsNodes?.sort((a, b) => {
-  //       const a_num = parseFloat(a.fiber);
-  //       const b_num = parseFloat(b.fiber);
-  //       return b_num - a_num;
-  //     });
-  //     dfsNodes?.sort((a, b) => {
-  //       const a_num = parseFloat(a.fiber);
-  //       const b_num = parseFloat(b.fiber);
-  //       return b_num - a_num;
-  //     });
-  //   } else if (sortParameter == "protein") {
-  //     bfsNodes?.sort((a, b) => {
-  //       const a_num = parseFloat(a.protein);
-  //       const b_num = parseFloat(b.protein);
-  //       return b_num - a_num;
-  //     });
-  //     dfsNodes?.sort((a, b) => {
-  //       const a_num = parseFloat(a.protein);
-  //       const b_num = parseFloat(b.protein);
-  //       return b_num - a_num;
-  //     });
-  //   } else if (sortParameter == "sodium") {
-  //     bfsNodes?.sort((a, b) => {
-  //       const a_num = parseFloat(a.sodium);
-  //       const b_num = parseFloat(b.sodium);
-  //       return b_num - a_num;
-  //     });
-  //     dfsNodes?.sort((a, b) => {
-  //       const a_num = parseFloat(a.sodium);
-  //       const b_num = parseFloat(b.sodium);
-  //       return b_num - a_num;
-  //     });
-  //   } else if (sortParameter == "sugar") {
-  //     bfsNodes?.sort((a, b) => {
-  //       const a_num = parseFloat(a.sugar);
-  //       const b_num = parseFloat(b.sugar);
-  //       return b_num - a_num;
-  //     });
-  //     dfsNodes?.sort((a, b) => {
-  //       const a_num = parseFloat(a.sugar);
-  //       const b_num = parseFloat(b.sugar);
-  //       return b_num - a_num;
-  //     });
-  //   }
-  //   // } else {
-  //   //   bfsNodes?.sort((a, b) => {
-  //   //     const a_num = parseFloat(a.sortParameter);
-  //   //     const b_num = parseFloat(b.sortParameter);
-  //   //     return b_num - a_num;
-  //   //   });
-  //   // }
-  // };
-
+  //function to sort nodes based on parameters
   const sortNodes = (sortParameter: string, sortDirection: string) => {
     if (sortParameter == "") {
       return;
@@ -227,6 +158,7 @@ export default function Home() {
     }
   };
 
+  //function that runs when form is submitted
   const onSubmit = (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setResponse(undefined);
@@ -236,6 +168,7 @@ export default function Home() {
     setSortDirection("");
   };
 
+  //handling changes in sort parameter
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSortParameter(event.target.value);
     sortNodes(event.target.value, sortDirection);
@@ -244,6 +177,7 @@ export default function Home() {
     }
   };
 
+  //handling changes in sort direction
   const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSortDirection(event.target.value);
     sortNodes(sortParameter, event.target.value);

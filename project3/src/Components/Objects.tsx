@@ -1,3 +1,4 @@
+//defining food objects
 interface FoodObj {
   brand: string;
   energy: string;
