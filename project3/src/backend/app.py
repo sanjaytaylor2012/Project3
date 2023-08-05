@@ -14,7 +14,7 @@ import time
 
 food_graph = AdjList()
 
-
+# Calculates the Jaccard similarity between 2 strings, returns a number 0-1, 1 being very similar, 0 being very unsimilar
 def jsim(str1, str2):
     set1 = set(str1)
     set2 = set(str2)
@@ -23,7 +23,7 @@ def jsim(str1, str2):
     similarity = len(intersection) / len(union)
     return similarity
 
-
+# Reads the serialized csv, constructs graph datastructure
 def parse_csv():
     with open("data.csv", mode="r", encoding="utf8") as file:
         csvFile = csv.reader(file)
@@ -34,6 +34,7 @@ def parse_csv():
             if first_line:
                 first_line = False
                 continue
+            # Creates food object with all necessary values such as nutrition values
             food_node = Food(
                 row[1],
                 row[2],
@@ -47,37 +48,31 @@ def parse_csv():
                 row[10],
             )
             adj_nodes = []
+            # Creates adjacent foods list for the current food
             for i in range(11, len(row)):
                 adj_nodes.append(row[i])
             nameplusbrand = row[0]
             food_graph.addVertex(nameplusbrand, food_node, adj_nodes)
 
-
+# Returns min heap of the input string's 10 most similar foods in the graph
 def search(word):
-    # [0.234234, peanut butter]
     heap = []
-    maxCosine = None
+    maxSim = None
     for key, val in food_graph.graph.items():
         food_name = val[0].name
-        currCosine = max(
-            jsim(word, food_name), maxCosine if maxCosine else jsim(word, food_name)
-        )
-        if currCosine != maxCosine and food_name != word:
-            maxCosine = currCosine
-            heapq.heappush(heap, [maxCosine, key])
-            if len(heap) > 10:
-                heapq.heappop(heap)
-    heapq.heappop(heap)
+        heapq.heappush(heap, [jsim(word, food_name), key]) #Calculates similarity between food in graph and entered food and adds to minheap
+        if len(heap) > 10:
+            heapq.heappop(heap) #If heap is at max capacity, pop least similar food
     return heap
 
-
+# Converts the heap to a "max heap" by multiplying all similarities by -1
 def reverseHeap(heap):
     for pair in heap:
         pair[0] = pair[0] * -1
     heapq.heapify(heap)
     return heap
 
-
+# Conducts a Depth First Search of the graph with the starting node being the first value in the heap
 def dfs(heap):
     heap = reverseHeap(heap)
 
@@ -97,13 +92,13 @@ def dfs(heap):
                     if adj_node not in res:
                         stack.append([1, adj_node])
         if heap:
-            stack.append(heapq.heappop(heap))
+            stack.append(heapq.heappop(heap)) #If traversal ends before 10 nodes are found, next highest value in heap added to stack
         else:
-            heap = search(res_list[-1])
+            heap = search(res_list[-1]) #Recreates the heap if it is empty and 10 nodes are still not found
             stack.append(heap[-1])
     return res
 
-
+# Conducts a Breadth First Search of the graph with the starting node being the first value in the heap
 def bfs(heap):
     heap = reverseHeap(heap)
     queue = collections.deque([heapq.heappop(heap)])
@@ -122,9 +117,9 @@ def bfs(heap):
                     if adj_node not in res:
                         queue.append([1, adj_node])
         if heap:
-            queue.append(heapq.heappop(heap))
+            queue.append(heapq.heappop(heap)) #If traversal ends before 10 nodes are found, next highest value in heap added to stack
         else:
-            heap = search(res_list[-1])
+            heap = search(res_list[-1]) #Recreates the heap if it is empty and 10 nodes are still not found
             heap = reverseHeap(heap)
             queue.append(heapq.heappop(heap))
     return res
@@ -143,7 +138,7 @@ CONST_DAILYFAT = 78
 CONST_DAILYFIBER = 28
 CONST_DAILYSODIUM = 2.3
 
-
+# Calculate Daily Value %'s for a given food based on its nutritional values and constants
 def getDailyValues(node):
     if node.energy != "N/A":
         node.energy = round(
@@ -167,11 +162,12 @@ def getDailyValues(node):
         )
     return node
 
-
+# Runs when the user hits "Enter" on website
 @app.route("/index", methods=["POST"])
 def index():
     req = request.get_json()
 
+    #Finds DFS results and tracks time taken
     start_time = time.time()
     node = search(req)
     dfs_result = dfs(node)
@@ -190,6 +186,7 @@ def index():
     print("dfs: ", dfs_nodes)
     print("dfs time: ", dfs_time)
 
+    #Finds BFS results and tracks time taken
     start_time = time.time()
     node = search(req)
     bfs_result = bfs(node)
