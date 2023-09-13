@@ -193,9 +193,15 @@ export default function Home() {
           width={{ base: "90%", md: "70%" }}
         />
         <Flex gap={4} align="center" mb={8}>
-          <Button isLoading={loading} type="submit" onClick={onSubmit}>
-            Enter
-          </Button>
+          <Stack>
+            <Text>
+              Note: If loading for a long time, refresh page or try a new prompt
+            </Text>
+            <Button isLoading={loading} type="submit" onClick={onSubmit}>
+              Enter
+            </Button>
+          </Stack>
+
           {response && (
             <Flex align="center">
               <Select
