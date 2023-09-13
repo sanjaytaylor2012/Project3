@@ -187,9 +187,8 @@ export default function Home() {
     <>
       <Stack align="center" justifyContent="center" mt={8} mb={8}>
         <Text fontSize={{ base: 40, sm: 50 }}>Brand Balance</Text>
-        <Text>
-          Note: If loading for longer than 10 seconds refresh page or try a new
-          prompt
+        <Text align="center" ml={2} mr={2}>
+          If loading for longer than 10 seconds refresh page or try a new prompt
         </Text>
         <Input
           placeholder="Enter any food here"
