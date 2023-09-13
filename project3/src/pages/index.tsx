@@ -187,20 +187,19 @@ export default function Home() {
     <>
       <Stack align="center" justifyContent="center" mt={8} mb={8}>
         <Text fontSize={{ base: 40, sm: 50 }}>Brand Balance</Text>
+        <Text>
+          Note: If loading for longer than 10 seconds refresh page or try a new
+          prompt
+        </Text>
         <Input
           placeholder="Enter any food here"
           onChange={onChange}
           width={{ base: "90%", md: "70%" }}
         />
         <Flex gap={4} align="center" mb={8}>
-          <Stack>
-            <Text>
-              Note: If loading for a long time, refresh page or try a new prompt
-            </Text>
-            <Button isLoading={loading} type="submit" onClick={onSubmit}>
-              Enter
-            </Button>
-          </Stack>
+          <Button isLoading={loading} type="submit" onClick={onSubmit}>
+            Enter
+          </Button>
 
           {response && (
             <Flex align="center">
